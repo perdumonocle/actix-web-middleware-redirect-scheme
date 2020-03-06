@@ -20,10 +20,10 @@ actix-web-middleware-redirect-scheme = "1.0.0"
 
 ```rust
 use actix_web::{App, web, HttpResponse};
-use actix_web_middleware_redirect_scheme::RedirectHTTPS;
+use actix_web_middleware_redirect_scheme::RedirectScheme;
 
 App::new()
-    .wrap(RedirectHTTPS::default())
+    .wrap(RedirectScheme::default())
     .route("/", web::get().to(|| HttpResponse::Ok()
                                     .content_type("text/plain")
                                     .body("Always HTTPS!")));
@@ -33,10 +33,10 @@ For example, in development if you are not using the default ports (80 and 443) 
 
 ```rust
 use actix_web::{App, web, HttpResponse};
-use actix_web_middleware_redirect_scheme::RedirectHTTPS;
+use actix_web_middleware_redirect_scheme::RedirectScheme;
 
 App::new()
-    .wrap(RedirectHTTPS::with_replacements(&[(":8080".to_owned(), ":8443".to_owned())]))
+    .wrap(RedirectScheme::with_replacements(false, &[(":8080".to_owned(), ":8443".to_owned())]))
     .route("/", web::get().to(|| HttpResponse::Ok()
                                     .content_type("text/plain")
                                     .body("Always HTTPS on non-default ports!")));
@@ -52,10 +52,10 @@ actix-web-middleware-redirect-scheme = "1.0.0"
 
 ```rust
 use actix_web::{App, web, HttpResponse};
-use actix_web_middleware_redirect_scheme::RedirectHTTP;
+use actix_web_middleware_redirect_scheme::RedirectScheme;
 
 App::new()
-    .wrap(RedirectHTTP::default())
+    .wrap(RedirectScheme::build(true))
     .route("/", web::get().to(|| HttpResponse::Ok()
                                     .content_type("text/plain")
                                     .body("Always HTTP!")));
@@ -65,10 +65,10 @@ For example, in development if you are not using the default ports (80 and 443) 
 
 ```rust
 use actix_web::{App, web, HttpResponse};
-use actix_web_middleware_redirect_scheme::RedirectHTTP;
+use actix_web_middleware_redirect_scheme::RedirectScheme;
 
 App::new()
-    .wrap(RedirectHTTP::with_replacements(&[(":8443".to_owned(), ":8080".to_owned())]))
+    .wrap(RedirectScheme::with_replacements(true, &[(":8443".to_owned(), ":8080".to_owned())]))
     .route("/", web::get().to(|| HttpResponse::Ok()
                                     .content_type("text/plain")
                                     .body("Always HTTP on non-default ports!")));
