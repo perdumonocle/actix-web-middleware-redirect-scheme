@@ -20,144 +20,65 @@ type ReadyResult<R, E> = Ready<Result<R, E>>;
 /// ## Usage
 /// ```
 /// use actix_web::{App, web, HttpResponse};
-/// use actix_web_middleware_redirect_scheme::RedirectHTTPS;
+/// use actix_web_middleware_redirect_scheme::RedirectScheme;
 ///
 /// App::new()
-///     .wrap(RedirectHTTPS::default())
+///     .wrap(RedirectScheme::default())
 ///     .route("/", web::get().to(|| HttpResponse::Ok()
 ///                                     .content_type("text/plain")
 ///                                     .body("Always HTTPS!")));
 /// ```
 #[derive(Default, Clone)]
-pub struct RedirectHTTPS {
+pub struct RedirectScheme {
+    to_http: bool,
     replacements: Vec<(String, String)>,
 }
 
-impl RedirectHTTPS {
-    /// Creates a RedirectHTTPS middleware which also performs string replacement on the final url.
-    /// This is useful when not running on the default web and ssl ports (80 and 443) since we will
-    /// need to change the development web port in the hostname to the development ssl port.
+impl RedirectScheme {
+    /// Creates a RedirectScheme middleware.
     ///
     /// ## Usage
     /// ```
     /// use actix_web::{App, web, HttpResponse};
-    /// use actix_web_middleware_redirect_scheme::RedirectHTTPS;
+    /// use actix_web_middleware_redirect_scheme::RedirectScheme;
     ///
     /// App::new()
-    ///     .wrap(RedirectHTTPS::with_replacements(&[(":8080".to_owned(), ":8443".to_owned())]))
+    ///     .wrap(RedirectScheme::build(false))
     ///     .route("/", web::get().to(|| HttpResponse::Ok()
     ///                                     .content_type("text/plain")
     ///                                     .body("Always HTTPS on non-default ports!")));
     /// ```
-    pub fn with_replacements(replacements: &[(String, String)]) -> Self {
-        RedirectHTTPS {
-            replacements: replacements.to_vec(),
+    pub fn build(to_http: bool) -> Self {
+        RedirectScheme {
+            to_http,
+            replacements: Vec::new(),
         }
     }
-}
 
-impl<S, B> Transform<S> for RedirectHTTPS
-where
-    S: Service<Request = ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
-    S::Future: 'static,
-{
-    type Request = ServiceRequest;
-    type Response = ServiceResponse<B>;
-    type Error = Error;
-    type InitError = ();
-    type Transform = RedirectHTTPSService<S>;
-    type Future = Ready<Result<Self::Transform, Self::InitError>>;
-
-    fn new_transform(&self, service: S) -> Self::Future {
-        ok(RedirectHTTPSService {
-            service,
-            replacements: self.replacements.clone(),
-        })
-    }
-}
-
-pub struct RedirectHTTPSService<S> {
-    service: S,
-    replacements: Vec<(String, String)>,
-}
-
-impl<S, B> Service for RedirectHTTPSService<S>
-where
-    S: Service<Request = ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
-    S::Future: 'static,
-{
-    type Request = ServiceRequest;
-    type Response = ServiceResponse<B>;
-    type Error = Error;
-    type Future = Either<S::Future, ReadyResult<Self::Response, Self::Error>>;
-
-    fn poll_ready(&mut self, cx: &mut Context) -> Poll<Result<(), Self::Error>> {
-        self.service.poll_ready(cx)
-    }
-
-    fn call(&mut self, req: ServiceRequest) -> Self::Future {
-        if req.connection_info().scheme() == "https" {
-            Either::Left(self.service.call(req))
-        } else {
-            let host = req.connection_info().host().to_owned();
-            let uri = req.uri().to_owned();
-            let mut url = format!("https://{}{}", host, uri);
-            for (s1, s2) in self.replacements.iter() {
-                url = url.replace(s1, s2);
-            }
-            Either::Right(ok(req.into_response(
-                HttpResponse::MovedPermanently()
-                    .header(http::header::LOCATION, url)
-                    .finish()
-                    .into_body(),
-            )))
-        }
-    }
-}
-
-/// Middleware for `actix-web` which redirects all `https` requests to `http` with optional url
-/// string replacements.
-///
-/// ## Usage
-/// ```
-/// use actix_web::{App, web, HttpResponse};
-/// use actix_web_middleware_redirect_scheme::RedirectHTTP;
-///
-/// App::new()
-///     .wrap(RedirectHTTP::default())
-///     .route("/", web::get().to(|| HttpResponse::Ok()
-///                                     .content_type("text/plain")
-///                                     .body("Always HTTP!")));
-/// ```
-#[derive(Default, Clone)]
-pub struct RedirectHTTP {
-    replacements: Vec<(String, String)>,
-}
-
-impl RedirectHTTP {
-    /// Creates a RedirectHTTP middleware which also performs string replacement on the final url.
+    /// Creates a RedirectScheme middleware which also performs string replacement on the final url.
     /// This is useful when not running on the default web and ssl ports (80 and 443) since we will
     /// need to change the development web port in the hostname to the development ssl port.
     ///
     /// ## Usage
     /// ```
     /// use actix_web::{App, web, HttpResponse};
-    /// use actix_web_middleware_redirect_scheme::RedirectHTTP;
+    /// use actix_web_middleware_redirect_scheme::RedirectScheme;
     ///
     /// App::new()
-    ///     .wrap(RedirectHTTP::with_replacements(&[(":8443".to_owned(), ":8080".to_owned())]))
+    ///     .wrap(RedirectScheme::with_replacements(false, &[(":8080".to_owned(), ":8443".to_owned())]))
     ///     .route("/", web::get().to(|| HttpResponse::Ok()
     ///                                     .content_type("text/plain")
-    ///                                     .body("Always HTTP on non-default ports!")));
+    ///                                     .body("Always HTTPS on non-default ports!")));
     /// ```
-    pub fn with_replacements(replacements: &[(String, String)]) -> Self {
-        RedirectHTTP {
+    pub fn with_replacements(to_http: bool, replacements: &[(String, String)]) -> Self {
+        RedirectScheme {
+            to_http,
             replacements: replacements.to_vec(),
         }
     }
 }
 
-impl<S, B> Transform<S> for RedirectHTTP
+impl<S, B> Transform<S> for RedirectScheme
 where
     S: Service<Request = ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
     S::Future: 'static,
@@ -166,23 +87,25 @@ where
     type Response = ServiceResponse<B>;
     type Error = Error;
     type InitError = ();
-    type Transform = RedirectHTTPService<S>;
+    type Transform = RedirectSchemeService<S>;
     type Future = Ready<Result<Self::Transform, Self::InitError>>;
 
     fn new_transform(&self, service: S) -> Self::Future {
-        ok(RedirectHTTPService {
+        ok(RedirectSchemeService {
             service,
+            to_http: self.to_http,
             replacements: self.replacements.clone(),
         })
     }
 }
 
-pub struct RedirectHTTPService<S> {
+pub struct RedirectSchemeService<S> {
     service: S,
+    to_http: bool,
     replacements: Vec<(String, String)>,
 }
 
-impl<S, B> Service for RedirectHTTPService<S>
+impl<S, B> Service for RedirectSchemeService<S>
 where
     S: Service<Request = ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
     S::Future: 'static,
@@ -197,12 +120,18 @@ where
     }
 
     fn call(&mut self, req: ServiceRequest) -> Self::Future {
-        if req.connection_info().scheme() == "http" {
+        if (!self.to_http && req.connection_info().scheme() == "https")
+            || (self.to_http && req.connection_info().scheme() == "http")
+        {
             Either::Left(self.service.call(req))
         } else {
             let host = req.connection_info().host().to_owned();
             let uri = req.uri().to_owned();
-            let mut url = format!("http://{}{}", host, uri);
+            let mut url = if self.to_http {
+                format!("http://{}{}", host, uri)
+            } else {
+                format!("https://{}{}", host, uri)
+            };
             for (s1, s2) in self.replacements.iter() {
                 url = url.replace(s1, s2);
             }
