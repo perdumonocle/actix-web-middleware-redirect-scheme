@@ -14,7 +14,7 @@ use std::task::{Context, Poll};
 
 type ReadyResult<R, E> = Ready<Result<R, E>>;
 
-/// Middleware for `actix-web` which redirects all `http` requests to `https` with optional url
+/// Middleware for `actix-web` which redirects between `http` and `https` requests with optional url
 /// string replacements.
 ///
 /// ## Usage
