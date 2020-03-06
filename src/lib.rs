@@ -12,6 +12,8 @@ use actix_web::{
 use futures::future::{ok, Either, Ready};
 use std::task::{Context, Poll};
 
+type ReadyResult<R, E> = Ready<Result<R, E>>;
+
 /// Middleware for `actix-web` which redirects all `http` requests to `https` with optional url
 /// string replacements.
 ///
@@ -87,7 +89,7 @@ where
     type Request = ServiceRequest;
     type Response = ServiceResponse<B>;
     type Error = Error;
-    type Future = Either<S::Future, Ready<Result<Self::Response, Self::Error>>>;
+    type Future = Either<S::Future, ReadyResult<Self::Response, Self::Error>>;
 
     fn poll_ready(&mut self, cx: &mut Context) -> Poll<Result<(), Self::Error>> {
         self.service.poll_ready(cx)
@@ -188,7 +190,7 @@ where
     type Request = ServiceRequest;
     type Response = ServiceResponse<B>;
     type Error = Error;
-    type Future = Either<S::Future, Ready<Result<Self::Response, Self::Error>>>;
+    type Future = Either<S::Future, ReadyResult<Self::Response, Self::Error>>;
 
     fn poll_ready(&mut self, cx: &mut Context) -> Poll<Result<(), Self::Error>> {
         self.service.poll_ready(cx)
