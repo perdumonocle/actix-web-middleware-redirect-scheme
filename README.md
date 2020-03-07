@@ -15,15 +15,15 @@ There is no need to use this crate if you only need to redirect to HTTPS, in thi
 ```toml
 # Cargo.toml
 [dependencies]
-actix-web-middleware-redirect-scheme = "1.1"
+actix-web-middleware-redirect-scheme = "2.0"
 ```
 
 ```rust
 use actix_web::{App, web, HttpResponse};
-use actix_web_middleware_redirect_scheme::RedirectScheme;
+use actix_web_middleware_redirect_scheme::RedirectSchemeBuilder;
 
 App::new()
-    .wrap(RedirectScheme::default())
+    .wrap(RedirectSchemeBuilder::new().build())
     .route("/", web::get().to(|| HttpResponse::Ok()
                                     .content_type("text/plain")
                                     .body("Always HTTPS!")));
@@ -33,10 +33,10 @@ For example, in development if you are not using the default ports (80 and 443) 
 
 ```rust
 use actix_web::{App, web, HttpResponse};
-use actix_web_middleware_redirect_scheme::RedirectScheme;
+use actix_web_middleware_redirect_scheme::RedirectSchemeBuilder;
 
 App::new()
-    .wrap(RedirectScheme::with_replacements(false, &[(":8080".to_owned(), ":8443".to_owned())]))
+    .wrap(RedirectSchemeBuilder::new().replacements(&[(":8080".to_owned(), ":8443".to_owned())]).build())
     .route("/", web::get().to(|| HttpResponse::Ok()
                                     .content_type("text/plain")
                                     .body("Always HTTPS on non-default ports!")));
@@ -47,15 +47,15 @@ App::new()
 ```toml
 # Cargo.toml
 [dependencies]
-actix-web-middleware-redirect-scheme = "1.1"
+actix-web-middleware-redirect-scheme = "2.0"
 ```
 
 ```rust
 use actix_web::{App, web, HttpResponse};
-use actix_web_middleware_redirect_scheme::RedirectScheme;
+use actix_web_middleware_redirect_scheme::RedirectSchemeBuilder;
 
 App::new()
-    .wrap(RedirectScheme::build(true))
+    .wrap(RedirectSchemeBuilder::new().https_to_http().build())
     .route("/", web::get().to(|| HttpResponse::Ok()
                                     .content_type("text/plain")
                                     .body("Always HTTP!")));
@@ -65,10 +65,10 @@ For example, in development if you are not using the default ports (80 and 443) 
 
 ```rust
 use actix_web::{App, web, HttpResponse};
-use actix_web_middleware_redirect_scheme::RedirectScheme;
+use actix_web_middleware_redirect_scheme::RedirectSchemeBuilder;
 
 App::new()
-    .wrap(RedirectScheme::with_replacements(true, &[(":8443".to_owned(), ":8080".to_owned())]))
+    .wrap(RedirectSchemeBuilder::new().https_to_http().replacements(&[(":8443", ":8080")]).build())
     .route("/", web::get().to(|| HttpResponse::Ok()
                                     .content_type("text/plain")
                                     .body("Always HTTP on non-default ports!")));
