@@ -17,7 +17,7 @@ impl RedirectSchemeBuilder {
     }
 
     /// Set redirection to HTTPS flag
-    pub fn https_to_https(&mut self, value: bool) -> &mut Self {
+    pub fn http_to_https(&mut self, value: bool) -> &mut Self {
         let mut new = self;
         new.https_to_http = !value;
         new
