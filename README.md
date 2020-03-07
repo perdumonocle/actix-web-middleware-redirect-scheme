@@ -28,6 +28,20 @@ App::new()
                                     .content_type("text/plain")
                                     .body("Always HTTPS!")));
 ```
+
+By default, the middleware uses answer code "301 Moved Permanently", but you can use "307 Temporary Redirect":
+
+```rust
+use actix_web::{App, web, HttpResponse};
+use actix_web_middleware_redirect_scheme::RedirectSchemeBuilder;
+
+App::new()
+    .wrap(RedirectSchemeBuilder::new().temporary().build())
+    .route("/", web::get().to(|| HttpResponse::Ok()
+                                    .content_type("text/plain")
+                                    .body("Always HTTPS!")));
+```
+
 By default, the middleware simply replaces the `scheme` of the URL with `https://`, but you may need to it to change other parts of the URL.
 For example, in development if you are not using the default ports (80 and 443) then you will need to specify their replacement, as below:
 
