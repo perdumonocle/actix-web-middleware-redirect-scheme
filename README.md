@@ -1,14 +1,12 @@
 # actix-web-middleware-redirect-scheme
 
 [![Build Status](https://travis-ci.org/perdumonocle/actix-web-middleware-redirect-scheme.svg?branch=master)](https://travis-ci.org/perdumonocle/actix-web-middleware-redirect-scheme)
+[![Latest Version](https://img.shields.io/crates/v/actix-web-middleware-redirect-scheme.svg)](https://crates.io/crates/actix-web-middleware-redirect-scheme)
+[![Docs](https://docs.rs/actix-web-middleware-redirect-scheme/badge.svg)](https://docs.rs/actix-web-middleware-redirect-scheme)
 
 A middleware for actix-web which forwards all `http` requests to `https` and vice versa. Based on actix-web-middleware-redirect-https.
 
 There is no need to use this crate if you only need to redirect to HTTPS, in this case use original crate [actix-web-middleware-redirect-https](https://crates.io/crates/actix-web-middleware-redirect-https)
-
-[crates.io](https://crates.io/crates/actix-web-middleware-redirect-scheme)
-
-[docs.rs](https://docs.rs/actix-web-middleware-redirect-scheme)
 
 ## Usage HTTP -> HTTPS
 
@@ -50,7 +48,7 @@ use actix_web::{App, web, HttpResponse};
 use actix_web_middleware_redirect_scheme::RedirectSchemeBuilder;
 
 App::new()
-    .wrap(RedirectSchemeBuilder::new().replacements(&[(":8080".to_owned(), ":8443".to_owned())]).build())
+    .wrap(RedirectSchemeBuilder::new().replacements(&[(":8080", ":8443")]).build())
     .route("/", web::get().to(|| HttpResponse::Ok()
                                     .content_type("text/plain")
                                     .body("Always HTTPS on non-default ports!")));

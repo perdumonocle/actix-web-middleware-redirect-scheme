@@ -18,6 +18,84 @@
 //!                                     .content_type("text/plain")
 //!                                     .body("Temporary to HTTP!")));
 //! ```
+//!
+//! ### Usage HTTP -> HTTPS
+//! 
+//! ```toml
+//! # Cargo.toml
+//! [dependencies]
+//! actix-web-middleware-redirect-scheme = "2.0"
+//! ```
+//! 
+//! ```rust
+//! use actix_web::{App, web, HttpResponse};
+//! use actix_web_middleware_redirect_scheme::RedirectSchemeBuilder;
+//! 
+//! App::new()
+//!     .wrap(RedirectSchemeBuilder::new().build())
+//!     .route("/", web::get().to(|| HttpResponse::Ok()
+//!                                     .content_type("text/plain")
+//!                                     .body("Always HTTPS!")));
+//! ```
+//! 
+//! By default, the middleware uses answer code "301 Moved Permanently", but you can use "307 Temporary Redirect":
+//! 
+//! ```rust
+//! use actix_web::{App, web, HttpResponse};
+//! use actix_web_middleware_redirect_scheme::RedirectSchemeBuilder;
+//! 
+//! App::new()
+//!     .wrap(RedirectSchemeBuilder::new().temporary().build())
+//!     .route("/", web::get().to(|| HttpResponse::Ok()
+//!                                     .content_type("text/plain")
+//!                                     .body("Always HTTPS!")));
+//! ```
+//! 
+//! By default, the middleware simply replaces the `scheme` of the URL with `https://`, but you may need to it to change other parts of the URL.
+//! For example, in development if you are not using the default ports (80 and 443) then you will need to specify their replacement, as below:
+//! 
+//! ```rust
+//! use actix_web::{App, web, HttpResponse};
+//! use actix_web_middleware_redirect_scheme::RedirectSchemeBuilder;
+//! 
+//! App::new()
+//!     .wrap(RedirectSchemeBuilder::new().replacements(&[(":8080", ":8443")]).build())
+//!     .route("/", web::get().to(|| HttpResponse::Ok()
+//!                                     .content_type("text/plain")
+//!                                     .body("Always HTTPS on non-default ports!")));
+//! ```
+//! 
+//! ### Usage HTTPS -> HTTP
+//! 
+//! ```toml
+//! # Cargo.toml
+//! [dependencies]
+//! actix-web-middleware-redirect-scheme = "2.0"
+//! ```
+//! 
+//! ```rust
+//! use actix_web::{App, web, HttpResponse};
+//! use actix_web_middleware_redirect_scheme::RedirectSchemeBuilder;
+//! 
+//! App::new()
+//!     .wrap(RedirectSchemeBuilder::new().https_to_http().build())
+//!     .route("/", web::get().to(|| HttpResponse::Ok()
+//!                                     .content_type("text/plain")
+//!                                     .body("Always HTTP!")));
+//! ```
+//! By default, the middleware simply replaces the `scheme` of the URL with `http://`, but you may need to it to change other parts of the URL.
+//! For example, in development if you are not using the default ports (80 and 443) then you will need to specify their replacement, as below:
+//! 
+//! ```rust
+//! use actix_web::{App, web, HttpResponse};
+//! use actix_web_middleware_redirect_scheme::RedirectSchemeBuilder;
+//! 
+//! App::new()
+//!     .wrap(RedirectSchemeBuilder::new().https_to_http().replacements(&[(":8443", ":8080")]).build())
+//!     .route("/", web::get().to(|| HttpResponse::Ok()
+//!                                     .content_type("text/plain")
+//!                                     .body("Always HTTP on non-default ports!")));
+//! ```
 
 pub mod builder;
 pub mod scheme;
