@@ -65,16 +65,20 @@ impl RedirectScheme {
     /// use actix_web_middleware_redirect_scheme::RedirectScheme;
     ///
     /// App::new()
-    ///     .wrap(RedirectScheme::with_replacements(false, &[(":8080".to_owned(), ":8443".to_owned())]))
+    ///     .wrap(RedirectScheme::with_replacements(false, &[(":8080", ":8443")]))
     ///     .route("/", web::get().to(|| HttpResponse::Ok()
     ///                                     .content_type("text/plain")
     ///                                     .body("Always HTTPS on non-default ports!")));
     /// ```
-    pub fn with_replacements(https_to_http: bool, replacements: &[(String, String)]) -> Self {
+    pub fn with_replacements<S: ToString>(https_to_http: bool, replacements: &[(S, S)]) -> Self {
+        let replacements = replacements
+            .iter()
+            .map(|(a, b)| ((*a).to_string(), (*b).to_string()))
+            .collect();
         RedirectScheme {
             https_to_http,
             temporary: false,
-            replacements: replacements.to_vec(),
+            replacements,
         }
     }
 }

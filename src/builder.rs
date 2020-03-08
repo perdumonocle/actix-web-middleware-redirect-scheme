@@ -45,11 +45,11 @@ impl RedirectSchemeBuilder {
     }
 
     /// Set list of replacements
-    pub fn replacements(&mut self, value: &[(&str, &str)]) -> &mut Self {
+    pub fn replacements<S: ToString>(&mut self, value: &[(S, S)]) -> &mut Self {
         let mut new = self;
         new.replacements = value
             .iter()
-            .map(|(a, b)| ((*a).into(), (*b).into()))
+            .map(|(a, b)| ((*a).to_string(), (*b).to_string()))
             .collect();
         new
     }
