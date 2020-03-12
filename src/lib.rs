@@ -21,11 +21,11 @@
 //!
 //! This is equivalent:
 //!
-//! ```rust,no-run
+//! ```ignore
 //! RedirectSchemeBuilder::new().temporary()
 //! ```
 //! and
-//! ```rust,no-run
+//! ```ignore
 //! RedirectSchemeBuilder::new().permanent(false)
 //! ```
 //!
@@ -96,11 +96,11 @@
 //!
 //! This is equivalent:
 //!
-//! ```rust,no-run
+//! ```ignore
 //! RedirectSchemeBuilder::new().https_to_http()
 //! ```
 //! and
-//! ```rust,no-run
+//! ```ignore
 //! RedirectSchemeBuilder::new().http_to_https(false)
 //! ```
 //!
