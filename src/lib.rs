@@ -19,6 +19,16 @@
 //!                                     .body("Temporary to HTTP!")));
 //! ```
 //!
+//! This is equivalent:
+//!
+//! ```rust,no-run
+//! RedirectSchemeBuilder::new().temporary()
+//! ```
+//! and
+//! ```rust,no-run
+//! RedirectSchemeBuilder::new().permanent(false)
+//! ```
+//!
 //! ### Usage HTTP -> HTTPS
 //!
 //! ```toml
@@ -83,6 +93,17 @@
 //!                                     .content_type("text/plain")
 //!                                     .body("Always HTTP!")));
 //! ```
+//!
+//! This is equivalent:
+//!
+//! ```rust,no-run
+//! RedirectSchemeBuilder::new().https_to_http()
+//! ```
+//! and
+//! ```rust,no-run
+//! RedirectSchemeBuilder::new().http_to_https(false)
+//! ```
+//!
 //! By default, the middleware simply replaces the `scheme` of the URL with `http://`, but you may need to it to change other parts of the URL.
 //! For example, in development if you are not using the default ports (80 and 443) then you will need to specify their replacement, as below:
 //!

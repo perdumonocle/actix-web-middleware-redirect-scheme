@@ -37,7 +37,7 @@ App::new()
     .wrap(RedirectSchemeBuilder::new().temporary().build())
     .route("/", web::get().to(|| HttpResponse::Ok()
                                     .content_type("text/plain")
-                                    .body("Always HTTPS!")));
+                                    .body("Temporary HTTPS!")));
 ```
 
 By default, the middleware simply replaces the `scheme` of the URL with `https://`, but you may need to it to change other parts of the URL.
