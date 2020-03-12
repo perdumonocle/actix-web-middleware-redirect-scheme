@@ -19,16 +19,6 @@
 //!                                     .body("Temporary to HTTP!")));
 //! ```
 //!
-//! This is equivalent:
-//!
-//! ```ignore
-//! RedirectSchemeBuilder::new().temporary()
-//! ```
-//! and
-//! ```ignore
-//! RedirectSchemeBuilder::new().permanent(false)
-//! ```
-//!
 //! ### Usage HTTP -> HTTPS
 //!
 //! ```toml
@@ -59,6 +49,16 @@
 //!     .route("/", web::get().to(|| HttpResponse::Ok()
 //!                                     .content_type("text/plain")
 //!                                     .body("Always HTTPS!")));
+//! ```
+//!
+//! This is equivalent:
+//!
+//! ```ignore
+//! RedirectSchemeBuilder::new().temporary()
+//! ```
+//! and
+//! ```ignore
+//! RedirectSchemeBuilder::new().permanent(false)
 //! ```
 //!
 //! By default, the middleware simply replaces the `scheme` of the URL with `https://`, but you may need to it to change other parts of the URL.
