@@ -25,13 +25,6 @@ impl RedirectSchemeBuilder {
         new
     }
 
-    /// Disable redirections
-    pub fn disable(&mut self) -> &mut Self {
-        let mut new = self;
-        new.disable = true;
-        new
-    }
-
     /// Set redirection to HTTPS flag
     pub fn http_to_https(&mut self, value: bool) -> &mut Self {
         let mut new = self;
@@ -62,14 +55,12 @@ impl RedirectSchemeBuilder {
 
     /// Set list of replacements
     pub fn replacements<S: ToString>(&mut self, value: &[(S, S)]) -> &mut Self {
-        //let mut new = self;
         if !self.disable {
             self.replacements = value
                 .iter()
                 .map(|(a, b)| ((*a).to_string(), (*b).to_string()))
                 .collect();
         }
-        //new
         self
     }
 
