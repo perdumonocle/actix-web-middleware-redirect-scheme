@@ -22,6 +22,8 @@ use futures::future::{ok, Ready};
 /// ```
 #[derive(Default, Clone)]
 pub struct RedirectScheme {
+    // Disabled redirections
+    pub disable: bool,
     // Redirect to HTTP (true: HTTP -> HTTPS, false: HTTPS -> HTTP)
     pub https_to_http: bool,
     // Temporary redirect (true: 307 Temporary Redirect, false: 301 Moved Permanently)
@@ -77,8 +79,8 @@ impl RedirectScheme {
             .collect();
         RedirectScheme {
             https_to_http,
-            temporary: false,
             replacements,
+            ..Self::default()
         }
     }
 }
@@ -98,6 +100,7 @@ where
     fn new_transform(&self, service: S) -> Self::Future {
         ok(RedirectSchemeService {
             service,
+            disable: self.disable,
             https_to_http: self.https_to_http,
             temporary: self.temporary,
             replacements: self.replacements.clone(),

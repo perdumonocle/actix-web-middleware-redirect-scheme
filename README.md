@@ -13,7 +13,7 @@ There is no need to use this crate if you only need to redirect to HTTPS, in thi
 ```toml
 # Cargo.toml
 [dependencies]
-actix-web-middleware-redirect-scheme = "2.1"
+actix-web-middleware-redirect-scheme = "2.2"
 ```
 
 ```rust
@@ -69,7 +69,7 @@ App::new()
 ```toml
 # Cargo.toml
 [dependencies]
-actix-web-middleware-redirect-scheme = "2.1"
+actix-web-middleware-redirect-scheme = "2.2"
 ```
 
 ```rust

@@ -24,7 +24,7 @@
 //! ```toml
 //! # Cargo.toml
 //! [dependencies]
-//! actix-web-middleware-redirect-scheme = "2.1"
+//! actix-web-middleware-redirect-scheme = "2.2"
 //! ```
 //!
 //! ```rust
@@ -80,7 +80,7 @@
 //! ```toml
 //! # Cargo.toml
 //! [dependencies]
-//! actix-web-middleware-redirect-scheme = "2.1"
+//! actix-web-middleware-redirect-scheme = "2.2"
 //! ```
 //!
 //! ```rust

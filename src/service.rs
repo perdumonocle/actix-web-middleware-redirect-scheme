@@ -8,6 +8,7 @@ use std::task::{Context, Poll};
 
 pub struct RedirectSchemeService<S> {
     pub service: S,
+    pub disable: bool,
     pub https_to_http: bool,
     pub temporary: bool,
     pub replacements: Vec<(String, String)>,
@@ -30,7 +31,8 @@ where
     }
 
     fn call(&mut self, req: ServiceRequest) -> Self::Future {
-        if (!self.https_to_http && req.connection_info().scheme() == "https")
+        if self.disable
+            || (!self.https_to_http && req.connection_info().scheme() == "https")
             || (self.https_to_http && req.connection_info().scheme() == "http")
         {
             Either::Left(self.service.call(req))
