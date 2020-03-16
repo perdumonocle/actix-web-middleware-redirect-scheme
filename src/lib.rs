@@ -7,8 +7,6 @@
 //! ## Examples
 //!
 //! ```
-//! extern crate actix_web_middleware_redirect_scheme;
-//!
 //! use actix_web::{App, web, HttpResponse};
 //! use actix_web_middleware_redirect_scheme::RedirectSchemeBuilder;
 //!
