@@ -34,6 +34,22 @@
 //!                                     .body("Always HTTPS!")));
 //! ```
 //!
+//! You can switch on/off of redirections according to your settings:
+//!
+//! ```rust
+//! use actix_web::{App, web, HttpResponse};
+//! use actix_web_middleware_redirect_scheme::RedirectSchemeBuilder;
+//!
+//! let mut use_redir = true;
+//! // ...
+//!
+//! App::new()
+//!     .wrap(RedirectSchemeBuilder::new().enable(use_redir).build())
+//!     .route("/", web::get().to(|| HttpResponse::Ok()
+//!                                     .content_type("text/plain")
+//!                                     .body("Maybe HTTPS")));
+//! ```
+//!
 //! By default, the middleware uses answer code "301 Moved Permanently", but you can use "307 Temporary Redirect":
 //!
 //! ```rust
