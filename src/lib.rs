@@ -20,7 +20,7 @@
 //! ```toml
 //! # Cargo.toml
 //! [dependencies]
-//! actix-web-middleware-redirect-scheme = "2.3"
+//! actix-web-middleware-redirect-scheme = "3"
 //! ```
 //!
 //! ```rust
@@ -92,7 +92,7 @@
 //! ```toml
 //! # Cargo.toml
 //! [dependencies]
-//! actix-web-middleware-redirect-scheme = "2.3"
+//! actix-web-middleware-redirect-scheme = "3"
 //! ```
 //!
 //! ```rust
