@@ -11,7 +11,7 @@ A middleware for actix-web which forwards all `http` requests to `https` and vic
 ```toml
 # Cargo.toml
 [dependencies]
-actix-web-middleware-redirect-scheme = "3"
+actix-web-middleware-redirect-scheme = "3.0"
 ```
 
 ```rust

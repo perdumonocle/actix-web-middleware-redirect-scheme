@@ -20,7 +20,7 @@
 //! ```toml
 //! # Cargo.toml
 //! [dependencies]
-//! actix-web-middleware-redirect-scheme = "3"
+//! actix-web-middleware-redirect-scheme = "3.0"
 //! ```
 //!
 //! ```rust
