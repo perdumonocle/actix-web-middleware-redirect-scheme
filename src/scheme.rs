@@ -30,6 +30,8 @@ pub struct RedirectScheme {
     pub temporary: bool,
     // List of string replacements
     pub replacements: Vec<(String, String)>,
+    // List of paths that are not redirected
+    pub ignore_paths: Vec<String>,
 }
 
 impl RedirectScheme {
@@ -104,6 +106,7 @@ where
             https_to_http: self.https_to_http,
             temporary: self.temporary,
             replacements: self.replacements.clone(),
+            ignore_paths: self.ignore_paths.clone(),
         })
     }
 }

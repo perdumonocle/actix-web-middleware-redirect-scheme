@@ -129,6 +129,25 @@
 //!                                     .content_type("text/plain")
 //!                                     .body("Always HTTP on non-default ports!")));
 //! ```
+//!
+//! ### Usage ignore paths
+//!
+//! In some cases there are some path that you may not want to redirect,
+//! you may just add them to a list of ignored path
+//!
+//! ```rust
+//! use actix_web::{App, web, HttpResponse};
+//! use actix_web_middleware_redirect_scheme::RedirectSchemeBuilder;
+//!
+//! App::new()
+//!     .wrap(RedirectSchemeBuilder::new().ignore_path("/.well-known/acme-challenge/").build())
+//!     .route("/", web::get().to(|| HttpResponse::Ok()
+//!                                     .content_type("text/plain")
+//!                                     .body("Always HTTPS port")))
+//!     .route("/.well-known/acme-challenge/*", web::get().to(|| HttpResponse::Ok()
+//!                                     .content_type("text/plain")
+//!                                     .body("Ignore the redirect")));
+//! ```
 
 pub mod builder;
 pub mod scheme;
