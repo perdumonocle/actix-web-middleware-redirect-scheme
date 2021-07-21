@@ -38,7 +38,7 @@ where
                 .iter()
                 .filter(|p| request_path.starts_with(p.as_str()))
                 .count()
-                == 0
+                != 0
         } else {
             self.disable
         };
