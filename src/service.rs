@@ -4,7 +4,6 @@ use actix_web::{
     http, Error, HttpResponse,
 };
 use futures::future::{ok, Either, Ready};
-use std::task::{Context, Poll};
 
 pub struct RedirectSchemeService<S> {
     pub service: S,
@@ -16,21 +15,18 @@ pub struct RedirectSchemeService<S> {
 
 type ReadyResult<R, E> = Ready<Result<R, E>>;
 
-impl<S, B> Service for RedirectSchemeService<S>
-where
-    S: Service<Request = ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
-    S::Future: 'static,
+impl<S> Service<ServiceRequest> for RedirectSchemeService<S>
+    where
+        S: Service<ServiceRequest, Response = ServiceResponse, Error = Error>,
+        S::Future: 'static,
 {
-    type Request = ServiceRequest;
-    type Response = ServiceResponse<B>;
+    type Response = ServiceResponse;
     type Error = Error;
-    type Future = Either<S::Future, ReadyResult<Self::Response, Self::Error>>;
+    type Future =  Either<S::Future, ReadyResult<Self::Response, Self::Error>>;
 
-    fn poll_ready(&mut self, cx: &mut Context) -> Poll<Result<(), Self::Error>> {
-        self.service.poll_ready(cx)
-    }
+    actix_service::forward_ready!(service);
 
-    fn call(&mut self, req: ServiceRequest) -> Self::Future {
+    fn call(&self, req: ServiceRequest) -> Self::Future {
         if self.disable
             || (!self.https_to_http && req.connection_info().scheme() == "https")
             || (self.https_to_http && req.connection_info().scheme() == "http")
@@ -53,9 +49,8 @@ where
                 } else {
                     HttpResponse::MovedPermanently()
                 }
-                .header(http::header::LOCATION, url)
-                .finish()
-                .into_body(),
+                    .insert_header((http::header::LOCATION, url))
+                    .finish()
             )))
         }
     }

@@ -1,5 +1,6 @@
 use crate::service::RedirectSchemeService;
 use actix_service::{Service, Transform};
+use actix_web::body::BoxBody;
 use actix_web::dev::{ServiceRequest, ServiceResponse};
 use actix_web::Error;
 use futures::future::{ok, Ready};
@@ -85,16 +86,15 @@ impl RedirectScheme {
     }
 }
 
-impl<S, B> Transform<S> for RedirectScheme
-where
-    S: Service<Request = ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
-    S::Future: 'static,
+impl<S> Transform<S, ServiceRequest> for RedirectScheme
+    where
+        S: Service<ServiceRequest, Response = ServiceResponse<BoxBody>, Error = Error>,
+        S::Future: 'static,
 {
-    type Request = ServiceRequest;
-    type Response = ServiceResponse<B>;
+    type Response = ServiceResponse<BoxBody>;
     type Error = Error;
-    type InitError = ();
     type Transform = RedirectSchemeService<S>;
+    type InitError = ();
     type Future = Ready<Result<Self::Transform, Self::InitError>>;
 
     fn new_transform(&self, service: S) -> Self::Future {
@@ -107,3 +107,5 @@ where
         })
     }
 }
+
+
