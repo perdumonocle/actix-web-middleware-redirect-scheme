@@ -11,6 +11,7 @@ pub struct RedirectSchemeService<S> {
     pub https_to_http: bool,
     pub temporary: bool,
     pub replacements: Vec<(String, String)>,
+    pub ignore_paths: Vec<String>,
 }
 
 type ReadyResult<R, E> = Ready<Result<R, E>>;
@@ -27,7 +28,18 @@ impl<S> Service<ServiceRequest> for RedirectSchemeService<S>
     actix_service::forward_ready!(service);
 
     fn call(&self, req: ServiceRequest) -> Self::Future {
-        if self.disable
+        let disabled = if !self.disable && !self.ignore_paths.is_empty() {
+            let request_path = req.uri().path();
+            self.ignore_paths
+                .iter()
+                .filter(|p| request_path.starts_with(p.as_str()))
+                .count()
+                != 0
+        } else {
+            self.disable
+        };
+
+        if disabled
             || (!self.https_to_http && req.connection_info().scheme() == "https")
             || (self.https_to_http && req.connection_info().scheme() == "http")
         {
