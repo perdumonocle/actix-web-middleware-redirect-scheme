@@ -13,7 +13,7 @@ categories = ["web-programming", "web-programming::http-server"]
 
 [dependencies]
 actix-service = "2.0.2"
-actix-web = { version = "4.0.0-beta.19", default-features = false }
+actix-web = { version = "4", default-features = false }
 futures = "0.3.19"
 
 [badges]
