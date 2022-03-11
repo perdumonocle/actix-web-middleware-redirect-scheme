@@ -1,8 +1,7 @@
 # actix-web-middleware-redirect-scheme
 
-[![Build Status](https://travis-ci.org/perdumonocle/actix-web-middleware-redirect-scheme.svg?branch=master)](https://travis-ci.org/perdumonocle/actix-web-middleware-redirect-scheme)
-[![Latest Version](https://img.shields.io/crates/v/actix-web-middleware-redirect-scheme.svg)](https://crates.io/crates/actix-web-middleware-redirect-scheme)
-[![Docs](https://docs.rs/actix-web-middleware-redirect-scheme/badge.svg)](https://docs.rs/actix-web-middleware-redirect-scheme)
+### This is a fork that supports `actix-web` 4
+
 
 A middleware for actix-web which forwards all `http` requests to `https` and vice versa. Based on actix-web-middleware-redirect-https.
 
@@ -11,7 +10,7 @@ A middleware for actix-web which forwards all `http` requests to `https` and vic
 ```toml
 # Cargo.toml
 [dependencies]
-actix-web-middleware-redirect-scheme = "4.0"
+actix-web-middleware-redirect-scheme = { version = "4.0.0", git = "https://github.com/AOx0/actix-web-middleware-redirect-scheme" }
 ```
 
 ```rust
