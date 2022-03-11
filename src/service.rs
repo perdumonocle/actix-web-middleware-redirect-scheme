@@ -4,7 +4,6 @@ use actix_web::{
     http, Error, HttpResponse,
 };
 use futures::future::{ok, Either, Ready};
-use std::task::{Context, Poll};
 
 pub struct RedirectSchemeService<S> {
     pub service: S,
@@ -12,26 +11,35 @@ pub struct RedirectSchemeService<S> {
     pub https_to_http: bool,
     pub temporary: bool,
     pub replacements: Vec<(String, String)>,
+    pub ignore_paths: Vec<String>,
 }
 
 type ReadyResult<R, E> = Ready<Result<R, E>>;
 
-impl<S, B> Service for RedirectSchemeService<S>
-where
-    S: Service<Request = ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
-    S::Future: 'static,
+impl<S> Service<ServiceRequest> for RedirectSchemeService<S>
+    where
+        S: Service<ServiceRequest, Response = ServiceResponse, Error = Error>,
+        S::Future: 'static,
 {
-    type Request = ServiceRequest;
-    type Response = ServiceResponse<B>;
+    type Response = ServiceResponse;
     type Error = Error;
-    type Future = Either<S::Future, ReadyResult<Self::Response, Self::Error>>;
+    type Future =  Either<S::Future, ReadyResult<Self::Response, Self::Error>>;
 
-    fn poll_ready(&mut self, cx: &mut Context) -> Poll<Result<(), Self::Error>> {
-        self.service.poll_ready(cx)
-    }
+    actix_service::forward_ready!(service);
 
-    fn call(&mut self, req: ServiceRequest) -> Self::Future {
-        if self.disable
+    fn call(&self, req: ServiceRequest) -> Self::Future {
+        let disabled = if !self.disable && !self.ignore_paths.is_empty() {
+            let request_path = req.uri().path();
+            self.ignore_paths
+                .iter()
+                .filter(|p| request_path.starts_with(p.as_str()))
+                .count()
+                != 0
+        } else {
+            self.disable
+        };
+
+        if disabled
             || (!self.https_to_http && req.connection_info().scheme() == "https")
             || (self.https_to_http && req.connection_info().scheme() == "http")
         {
@@ -53,9 +61,8 @@ where
                 } else {
                     HttpResponse::MovedPermanently()
                 }
-                .header(http::header::LOCATION, url)
-                .finish()
-                .into_body(),
+                    .insert_header((http::header::LOCATION, url))
+                    .finish()
             )))
         }
     }
